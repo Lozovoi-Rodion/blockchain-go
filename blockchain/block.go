@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/gob"
-	"fmt"
 	"log"
 )
 
@@ -29,9 +28,7 @@ func (b *Block) HashTransactions() []byte {
 		txHashes = append(txHashes, tx.ID)
 	}
 
-	fmt.Println("txHashes:::", txHashes)
 	txHash = sha256.Sum256(bytes.Join(txHashes, []byte{}))
-	fmt.Println("txHash:::", txHash)
 
 	return txHash[:]
 }
