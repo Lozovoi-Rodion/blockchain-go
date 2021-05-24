@@ -21,16 +21,3 @@ func Base58Decode(input []byte) []byte {
 
 	return []byte(decode)
 }
-
-//project/
-//	css/
-//		old_css/
-//		new_css/
-//	indexes/
-//		template1/
-//			oldtemplate1.html
-//			newtemplate1.html
-//		template2/
-//			oldtemplate2.html
-//			newtemplate2.html
-//.......
