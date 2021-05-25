@@ -19,5 +19,5 @@ func Base58Decode(input []byte) []byte {
 		log.Panic(err)
 	}
 
-	return []byte(decode)
+	return decode
 }
