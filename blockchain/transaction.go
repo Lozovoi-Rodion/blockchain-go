@@ -45,6 +45,15 @@ func (tx Transaction) Serialize() []byte {
 	return encoded.Bytes()
 }
 
+func DeserializeTransaction(data []byte) Transaction {
+	var transaction Transaction
+
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+	err := decoder.Decode(&transaction)
+	Handle(err)
+	return transaction
+}
+
 func CoinbaseTx(to, data string) *Transaction {
 	if data == "" {
 		randData := make([]byte, 24)
@@ -54,21 +63,18 @@ func CoinbaseTx(to, data string) *Transaction {
 	}
 
 	txin := TxInput{[]byte{}, -1, nil, []byte(data)}
-	txout := NewTxOutput(20, to)
+	txout := *NewTxOutput(20, to)
 
-	tx := Transaction{nil, []TxInput{txin}, []TxOutput{*txout}}
+	tx := Transaction{nil, []TxInput{txin}, []TxOutput{txout}}
 	tx.ID = tx.Hash()
 
 	return &tx
 }
 
-func NewTransaction(from, to string, amount int, UTXO *UTXOSet) *Transaction {
+func NewTransaction(w *wallet.Wallet, to string, amount int, UTXO *UTXOSet) *Transaction {
 	var inputs []TxInput
 	var outputs []TxOutput
 
-	wallets, err := wallet.CreateWallets()
-	Handle(err)
-	w := wallets.GetWallet(from)
 	pubKeyHash := wallet.PublicKeyHash(w.PublicKey)
 	acc, validOutputs := UTXO.FindSpendableOutputs(pubKeyHash, amount)
 
@@ -85,6 +91,8 @@ func NewTransaction(from, to string, amount int, UTXO *UTXOSet) *Transaction {
 			inputs = append(inputs, input)
 		}
 	}
+
+	from := fmt.Sprintf("%s", w.Address())
 
 	outputs = append(outputs, *NewTxOutput(amount, to))
 
