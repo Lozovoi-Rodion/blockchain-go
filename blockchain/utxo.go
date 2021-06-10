@@ -3,8 +3,9 @@ package blockchain
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/dgraph-io/badger"
 	"log"
+
+	"github.com/dgraph-io/badger"
 )
 
 var (
@@ -23,6 +24,7 @@ func (u UTXOSet) FindSpendableOutputs(pubKeyHash []byte, amount int) (int, map[s
 
 	err := db.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
+
 		it := txn.NewIterator(opts)
 		defer it.Close()
 
@@ -41,20 +43,22 @@ func (u UTXOSet) FindSpendableOutputs(pubKeyHash []byte, amount int) (int, map[s
 					unspentOuts[txID] = append(unspentOuts[txID], outIdx)
 				}
 			}
-
 		}
 		return nil
 	})
 	Handle(err)
+
 	return accumulated, unspentOuts
 }
 
 func (u UTXOSet) FindUnspentTransactions(pubKeyHash []byte) []TxOutput {
 	var UTXOs []TxOutput
+
 	db := u.Blockchain.Database
 
 	err := db.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
+
 		it := txn.NewIterator(opts)
 		defer it.Close()
 
@@ -63,12 +67,12 @@ func (u UTXOSet) FindUnspentTransactions(pubKeyHash []byte) []TxOutput {
 			v, err := item.ValueCopy(nil)
 			Handle(err)
 			outs := DeserializeOutputs(v)
-
 			for _, out := range outs.Outputs {
 				if out.IsLockedWithKey(pubKeyHash) {
 					UTXOs = append(UTXOs, out)
 				}
 			}
+
 		}
 		return nil
 	})
@@ -83,13 +87,16 @@ func (u UTXOSet) CountTransactions() int {
 
 	err := db.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
+
 		it := txn.NewIterator(opts)
 		defer it.Close()
 		for it.Seek(utxoPrefix); it.ValidForPrefix(utxoPrefix); it.Next() {
 			counter++
 		}
+
 		return nil
 	})
+
 	Handle(err)
 
 	return counter
@@ -105,14 +112,13 @@ func (u UTXOSet) Reindex() {
 	err := db.Update(func(txn *badger.Txn) error {
 		for txId, outs := range UTXO {
 			key, err := hex.DecodeString(txId)
-			if err != nil {
-				return err
-			}
+			Handle(err)
 			key = append(utxoPrefix, key...)
 
 			err = txn.Set(key, outs.Serialize())
 			Handle(err)
 		}
+
 		return nil
 	})
 	Handle(err)
@@ -161,6 +167,7 @@ func (u *UTXOSet) Update(block *Block) {
 				log.Panic(err)
 			}
 		}
+
 		return nil
 	})
 	Handle(err)

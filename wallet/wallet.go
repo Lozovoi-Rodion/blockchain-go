@@ -35,23 +35,20 @@ func (w Wallet) Address() []byte {
 
 func NewKeyPair() (ecdsa.PrivateKey, []byte) {
 	curve := elliptic.P256()
-	private, err := ecdsa.GenerateKey(curve, rand.Reader)
 
+	private, err := ecdsa.GenerateKey(curve, rand.Reader)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	pub := append(private.PublicKey.X.Bytes(), private.PublicKey.Y.Bytes()...)
-
 	return *private, pub
 }
 
 func MakeWallet() *Wallet {
 	private, public := NewKeyPair()
-	wallet := Wallet{
-		PrivateKey: private,
-		PublicKey:  public,
-	}
+	wallet := Wallet{private, public}
+
 	return &wallet
 }
 
@@ -65,6 +62,7 @@ func PublicKeyHash(pubKey []byte) []byte {
 	}
 
 	publicRipMD := hasher.Sum(nil)
+
 	return publicRipMD
 }
 

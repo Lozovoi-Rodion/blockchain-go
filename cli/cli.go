@@ -102,6 +102,7 @@ func (cli *CommandLine) createBlockChain(address, nodeID string) {
 	if !wallet.ValidateAddress(address) {
 		log.Panic("Address is not Valid")
 	}
+	fmt.Println("nodeID!!!!", nodeID)
 	chain := blockchain.InitBlockChain(address, nodeID)
 	defer chain.Database.Close()
 

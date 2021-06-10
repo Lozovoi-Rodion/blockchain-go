@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	dbPath      = "./tmp/blocks_%s"
+	dbPath      = "./tmp/blocks_3000"
 	genesisData = "First Transaction from Genesis"
 )
 
@@ -32,8 +32,8 @@ func DBexists(path string) bool {
 	return true
 }
 
-func ContinueBlockChain(nodeId string) *BlockChain {
-	path := fmt.Sprintf(dbPath, nodeId)
+func ContinueBlockChain(nodeID string) *BlockChain {
+	path := fmt.Sprintf(dbPath, nodeID)
 	if DBexists(path) == false {
 		fmt.Println("No existing blockchain found, create one!")
 		runtime.Goexit()
@@ -60,9 +60,8 @@ func ContinueBlockChain(nodeId string) *BlockChain {
 	return &chain
 }
 
-func InitBlockChain(address, nodeId string) *BlockChain {
-	path := fmt.Sprintf(dbPath, nodeId)
-	fmt.Printf("THIS IS THE PATH!!!!:::: %s and node id ! %s", path, nodeId)
+func InitBlockChain(address, nodeID string) *BlockChain {
+	path := fmt.Sprintf(dbPath, nodeID)
 	if DBexists(path) {
 		fmt.Println("Blockchain already exists")
 		runtime.Goexit()

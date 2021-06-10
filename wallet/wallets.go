@@ -44,12 +44,12 @@ func (ws *Wallets) GetAllAddresses() []string {
 	return addresses
 }
 
-func (ws *Wallets) GetWallet(address string) Wallet {
+func (ws Wallets) GetWallet(address string) Wallet {
 	return *ws.Wallets[address]
 }
 
-func (ws *Wallets) LoadFile(nodeId string) error {
-	walletFile := fmt.Sprintf(walletFile, nodeId)
+func (ws *Wallets) LoadFile(nodeID string) error {
+	walletFile := fmt.Sprintf(walletFile, nodeID)
 	if _, err := os.Stat(walletFile); os.IsNotExist(err) {
 		return err
 	}
@@ -73,9 +73,9 @@ func (ws *Wallets) LoadFile(nodeId string) error {
 	return nil
 }
 
-func (ws *Wallets) SaveFile(nodeId string) {
+func (ws *Wallets) SaveFile(nodeID string) {
 	var content bytes.Buffer
-	walletFile := fmt.Sprintf(walletFile, nodeId)
+	walletFile := fmt.Sprintf(walletFile, nodeID)
 
 	gob.Register(elliptic.P256())
 

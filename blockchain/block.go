@@ -22,21 +22,13 @@ func (b *Block) HashTransactions() []byte {
 	for _, tx := range b.Transactions {
 		txHashes = append(txHashes, tx.Serialize())
 	}
-
 	tree := NewMerkleTree(txHashes)
 
 	return tree.RootNode.Data
 }
 
 func CreateBlock(txs []*Transaction, prevHash []byte, height int) *Block {
-	block := &Block{
-		Timestamp:    time.Now().Unix(),
-		Hash:         []byte{},
-		Transactions: txs,
-		PrevHash:     prevHash,
-		Nonce:        0,
-		Height:       height,
-	}
+	block := &Block{time.Now().Unix(), []byte{}, txs, prevHash, 0, height}
 	pow := NewProof(block)
 	nonce, hash := pow.Run()
 
@@ -63,6 +55,7 @@ func (b *Block) Serialize() []byte {
 
 func Deserialize(data []byte) *Block {
 	var block Block
+
 	decoder := gob.NewDecoder(bytes.NewReader(data))
 
 	err := decoder.Decode(&block)
